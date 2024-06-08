@@ -1,5 +1,5 @@
 import bpy
-from .functions import unrecursive_purge
+from .functions import purge_unrecursive, purge_recursive_node_trees
 
 
 #### ------------------------------ FUNCTIONS ------------------------------ ####
@@ -49,32 +49,16 @@ def purge_recursive_materials(self, context, obj_type):
     return recursive_count
 
 
-def purge_recursive_node_tree(data_type, world=None, material=None, line_style=None):
-    if data_type == 'material':
-        nodes = material.node_tree.nodes
-    elif data_type == 'world':
+
+def purge_recursive_node_tree(data_type, world=None, line_style=None):
+    if data_type == 'world':
         nodes = world.node_tree.nodes
     elif data_type == 'line_style':
         nodes = line_style.node_tree.nodes
 
-    # Images inside Node Tree
-    recursive_count = 0
-    for node in nodes:
-        if node.type == 'TEX_IMAGE':
-            image = node.image
-            if image and image.users == 1:
-                bpy.data.images.remove(image, do_unlink=True)
-                recursive_count += 1
+    total_recursive_count = purge_recursive_node_trees(nodes)
 
-        # Node Groups inside Node Tree
-        if node.type == 'GROUP':
-            group = node.node_tree
-            if group and group.users == 1:
-                group_nodes = group.nodes        
-                bpy.data.node_groups.remove(group, do_unlink=True)
-                recursive_count += 1
-
-    return recursive_count
+    return total_recursive_count
 
 
 
@@ -90,19 +74,20 @@ class SCENE_OT_purge_unrecursive(bpy.types.Operator):
     )
 
     def execute(self, context):
-        # purged_count = 0
-        purged_count = unrecursive_purge(self.data_type)
+        purged_count = purge_unrecursive(self.data_type)
         self.report({'INFO'}, "Purged {} orphaned {}".format(purged_count, self.data_type))
         return {'FINISHED'}
 
 
-class FILE_OT_purge_orphaned_material(bpy.types.Operator):
-    bl_idname = "outliner.purge_orphan_materials"
+class SCENE_OT_purge_recursive(bpy.types.Operator):
+    bl_idname = "outliner.purge_recursive"
     bl_label = "Purge Orphaned Materials"
     bl_description = ("Removes all unused (userless) materials from .blend file.\n"
                     "Shift-click to purge recursive orphaned data")
     bl_options = {'REGISTER', 'UNDO'}
 
+    data_type: bpy.props.StringProperty(
+    )
     recursive: bpy.props.BoolProperty(
         name = "Recursive Purging",
         default = False,
@@ -111,132 +96,27 @@ class FILE_OT_purge_orphaned_material(bpy.types.Operator):
     def execute(self, context):
         purged_count = 0
         recursive_count = 0
-        for material in bpy.data.materials:
-            if material.users == 0:
-                if self.recursive:
-                    recursive_count += purge_recursive_node_tree('material', material=material)
 
-                bpy.data.materials.remove(material)
+        data_collection = getattr(bpy.data, self.data_type)
+        for block in data_collection:
+            if block.users == 0:
+                if self.data_type == "node_groups":
+                    tree = block
+                else:
+                    tree = block.node_tree
+
+                if self.recursive:
+                    # Purge Recursive
+                    recursive_count += purge_recursive_node_trees(tree.nodes)
+
+                # Purge
+                data_collection.remove(block)
                 purged_count += 1
 
         if self.recursive:
-            self.report({'INFO'}, "Purged {} orphaned material(s) (and {} recursive orphaned data)".format(purged_count, recursive_count))
+            self.report({'INFO'}, "Purged {} orphaned {} (and {} recursive orphaned data)".format(purged_count, self.data_type, recursive_count))
         else:
-            self.report({'INFO'}, "Purged {} orphaned material(s)".format(purged_count))
-        return {'FINISHED'}
-
-    def invoke(self, context, event):
-        self.recursive = event.shift
-        return self.execute(context)
-
-
-class FILE_OT_purge_orphaned_node_group(bpy.types.Operator):
-    bl_idname = "outliner.purge_orphan_node"
-    bl_label = "Purge Orphaned Node Groups. Shift-click to purge recursive orphaned data"
-    bl_description = "Purges all orphaned node groups"
-    bl_options = {'REGISTER', 'UNDO'}
-
-    recursive: bpy.props.BoolProperty(
-        name = "Recursive Purging",
-        default = False,
-    )
-
-    def execute(self, context):
-        purged_count = 0
-        recursive_count = 0
-        for node in bpy.data.node_groups:
-            if node.users == 0:
-                if self.recursive:
-                    nodes = node.nodes
-                    for inside_node in nodes:
-
-                        # Images inside Node Groups
-                        if inside_node.type == 'TEX_IMAGE':
-                            image = inside_node.image
-                            if image and image.users == 1:
-                                bpy.data.images.remove(image, do_unlink=True)
-                                recursive_count += 1
-
-                        # Node Groups inside Node Groups
-                        if inside_node.type == 'GROUP':
-                            group = inside_node.node_tree
-                            if group and group.users == 1:
-                                bpy.data.node_groups.remove(group, do_unlink=True)
-                                recursive_count += 1
-
-                bpy.data.node_groups.remove(node)
-                purged_count += 1
-
-        if self.recursive:
-            self.report({'INFO'}, "Purged {} orphaned node group(s) (and {} recursive orphaned data)".format(purged_count, recursive_count))
-        else:
-            self.report({'INFO'}, "Purged {} orphaned node group(s)".format(purged_count))
-        return {'FINISHED'}
-
-    def invoke(self, context, event):
-        self.recursive = event.shift
-        return self.execute(context)
-
-
-class FILE_OT_purge_orphaned_world(bpy.types.Operator):
-    bl_idname = "outliner.purge_orphan_world"
-    bl_label = "Purge Orphaned Worlds. Shift-click to purge recursive orphaned data"
-    bl_description = "Purges all orphaned worlds"
-    bl_options = {'REGISTER', 'UNDO'}
-
-    recursive: bpy.props.BoolProperty(
-        name = "Recursive Purging",
-        default = False,
-    )
-
-    def execute(self, context):
-        purged_count = 0
-        recursive_count = 0
-        for world in bpy.data.worlds:
-            if world.users == 0:
-                if self.recursive:
-                    recursive_count += purge_recursive_node_tree(self, context, 'world', world=world)
-
-                bpy.data.worlds.remove(world)
-                purged_count += 1
-
-        if self.recursive:
-            self.report({'INFO'}, "Purged {} orphaned world(s) (and {} recursive orphaned data)".format(purged_count, recursive_count))
-        else:
-            self.report({'INFO'}, "Purged {} orphaned world(s)".format(purged_count))
-        return {'FINISHED'}
-
-    def invoke(self, context, event):
-        self.recursive = event.shift
-        return self.execute(context)
-
-
-class FILE_OT_purge_orphaned_line_style(bpy.types.Operator):
-    bl_idname = "outliner.purge_orphan_linestyle"
-    bl_label = "Purge Orphaned Line Styles"
-    bl_description = "Purges all orphaned line styles. Shift-click to purge recursive orphaned data"
-    bl_options = {'REGISTER', 'UNDO'}
-
-    recursive: bpy.props.BoolProperty(
-        name = "Recursive Purging",
-        default = False,
-    )
-
-    def execute(self, context):
-        purged_count = 0
-        recursive_count = 0
-        for line_style in bpy.data.linestyles:
-            if line_style.users == 0:
-                if self.recursive:
-                    recursive_count += purge_recursive_node_tree(self, context, 'line_style', line_style=line_style)
-
-                bpy.data.linestyles.remove(line_style)
-                purged_count += 1
-
-        if self.recursive:
-            self.report({'INFO'}, "Purged {} orphaned line style(s) (and {} recursive orphaned data)".format(purged_count, recursive_count))
-        else:
-            self.report({'INFO'}, "Purged {} orphaned line style(s)".format(purged_count))
+            self.report({'INFO'}, "Purged {} orphaned {}".format(purged_count, self.data_type))
         return {'FINISHED'}
 
     def invoke(self, context, event):
@@ -576,30 +456,11 @@ class FILE_OT_purge_orphaned_by_name(bpy.types.Operator):
                             recursive_count += purge_recursive_materials(self, context, 'hair')
 
                         # Recursive for Data Types that have Node Trees
-                        if self.data_type == "MATERIALS":
-                            recursive_count += purge_recursive_node_tree(self, context, 'material', material=block)
-                        if self.data_type == "WORLDS":
-                            recursive_count += purge_recursive_node_tree(self, context, 'world', world=block)
-                        if self.data_type == "LINESTYLES":
-                            recursive_count += purge_recursive_node_tree(self, context, 'line_style', line_style=block)
+                        if self.data_type in ('MATERIALS', 'WORLDS', 'LINESTYLES'):
+                            recursive_count += purge_recursive_node_trees(block.node_tree.nodes)
 
-                        if self.data_type == "NODE_GROUPS":
-                            nodes = block.nodes
-                            for inside_node in nodes:
-
-                                # Images inside Node Groups
-                                if inside_node.type == 'TEX_IMAGE':
-                                    image = inside_node.image
-                                    if image and image.users == 1:
-                                        bpy.data.images.remove(image, do_unlink=True)
-                                        recursive_count += 1
-
-                                # Node Groups inside Node Groups
-                                if inside_node.type == 'GROUP':
-                                    group = inside_node.node_tree
-                                    if group and group.users == 1:
-                                        bpy.data.node_groups.remove(group, do_unlink=True)
-                                        recursive_count += 1
+                        if self.data_type == 'NODE_GROUPS':
+                            recursive_count += purge_recursive_node_trees(block.nodes)
 
                     data_collection.remove(block)
                     purged_count += 1
@@ -737,11 +598,8 @@ class FILE_OT_unpack_image_by_name(bpy.types.Operator):
 
 classes = [
     SCENE_OT_purge_unrecursive,
+    SCENE_OT_purge_recursive,
 
-    FILE_OT_purge_orphaned_material,
-    FILE_OT_purge_orphaned_node_group,
-    FILE_OT_purge_orphaned_world,
-    FILE_OT_purge_orphaned_line_style,
     FILE_OT_purge_orphaned_mesh,
     FILE_OT_purge_orphaned_curve,
     FILE_OT_purge_orphaned_grease_pencil,

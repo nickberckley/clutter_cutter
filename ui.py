@@ -20,60 +20,55 @@ class OUTLINER_MT_purge_by_type(bpy.types.Menu):
         # First Row
         top1 = grid.row()
         imagecount = orphaned_counter('images')
-        op = top1.operator('outliner.purge_unrecursive', text='Image' + ' (' + str(imagecount) + ')', icon='IMAGE_DATA')
-        op.data_type="images"
+        top1.operator('outliner.purge_unrecursive', text='Image' + ' (' + str(imagecount) + ')', icon='IMAGE_DATA').data_type="images"
         if imagecount < 1:
             top1.enabled = False
 
         top2 = grid.row()
         materialcount = orphaned_counter('materials')
-        top2.operator('outliner.purge_orphan_materials', text='Material' + ' (' + str(materialcount) + ')', icon='MATERIAL_DATA')
+        top2.operator('outliner.purge_recursive', text='Material' + ' (' + str(materialcount) + ')', icon='MATERIAL_DATA').data_type="materials"
         if materialcount < 1:
             top2.enabled = False
 
         top3 = grid.row()
         nodegroupcount = orphaned_counter('node_groups')
-        top3.operator('outliner.purge_orphan_node', text='Node Group' + ' (' + str(nodegroupcount) + ')', icon='NODETREE')
+        top3.operator('outliner.purge_recursive', text='Node Group' + ' (' + str(nodegroupcount) + ')', icon='NODETREE').data_type="node_groups"
         if nodegroupcount < 1:
             top3.enabled = False
 
         top4 = grid.row()
         worldcount = orphaned_counter('worlds')
-        top4.operator('outliner.purge_orphan_world', text='World' + ' (' + str(worldcount) + ')', icon='WORLD_DATA')
+        top4.operator('outliner.purge_recursive', text='World' + ' (' + str(worldcount) + ')', icon='WORLD_DATA').data_type="worlds"
         if worldcount < 1:
             top4.enabled = False
 
         top5 = grid.row()
         brushcount = orphaned_counter('brushes')
-        op = top5.operator('outliner.purge_unrecursive', text='Brush' + ' (' + str(brushcount) + ')', icon='BRUSH_DATA')
-        op.data_type="brushes"
+        top5.operator('outliner.purge_unrecursive', text='Brush' + ' (' + str(brushcount) + ')', icon='BRUSH_DATA').data_type="brushes"
         if brushcount < 1:
             top5.enabled = False
 
         top6 = grid.row()
         texturecount = orphaned_counter('textures')
-        op = top6.operator('outliner.purge_unrecursive', text='Texture' + ' (' + str(texturecount) + ')', icon='TEXTURE_DATA')
-        op.data_type="textures"
+        top6.operator('outliner.purge_unrecursive', text='Texture' + ' (' + str(texturecount) + ')', icon='TEXTURE_DATA').data_type="textures"
         if texturecount < 1:
             top6.enabled = False
 
         top7 = grid.row()
         palettecount = orphaned_counter('palettes')
-        op = top7.operator('outliner.purge_unrecursive', text='Palette' + ' (' + str(palettecount) + ')', icon='COLOR')
-        op.data_type="palettes"
+        top7.operator('outliner.purge_unrecursive', text='Palette' + ' (' + str(palettecount) + ')', icon='COLOR').data_type="palettes"
         if palettecount < 1:
             top7.enabled = False
 
         top8 = grid.row()
         linestylecount = orphaned_counter('linestyles')
-        top8.operator('outliner.purge_orphan_linestyle', text='Line Style' + ' (' + str(linestylecount) + ')', icon='LINE_DATA')
+        top8.operator('outliner.purge_recursive', text='Line Style' + ' (' + str(linestylecount) + ')', icon='LINE_DATA').data_type="linestyles"
         if linestylecount < 1:
             top8.enabled = False
 
         top9 = grid.row()
         particlecount = orphaned_counter('particles')
-        op = top9.operator('outliner.purge_unrecursive', text='Particles' + ' (' + str(particlecount) + ')', icon='PARTICLE_DATA')
-        op.data_type="particles"
+        top9.operator('outliner.purge_unrecursive', text='Particles' + ' (' + str(particlecount) + ')', icon='PARTICLE_DATA').data_type="particles"
         if particlecount < 1:
             top9.enabled = False
 
