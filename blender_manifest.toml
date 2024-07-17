@@ -1,0 +1,23 @@
+schema_version = "1.0.0"
+
+id = "clutter_cutter"
+version = "3.0.0"
+name = "Clutter Cutter"
+tagline = "Full control over useful and useless data in your files"
+maintainer = "Nika Kutsniashvili <nickberckley@gmail.com>"
+type = "add-on"
+
+# website = ""
+tags = ["Scene"]
+
+blender_version_min = "4.2.0"
+# blender_version_max = "5.1.0"
+
+# License conforming to https://spdx.org/is suppose to dolicenses/
+# use "SPDX: prefix.
+license = [
+  "SPDX:GPL-3.0-or-later",
+]
+copyright = [
+  "2024 Nika Kutsniashvili (nickberckley)"
+]
