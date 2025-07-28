@@ -22,9 +22,8 @@ class OUTLINER_MT_purge_by_type(bpy.types.Menu):
         NOTE: Masks have a bug that always keeps at least one user on them, so even if they're userless it's impossible to detect that.
         """
 
-
         # First Column
-        entries = (
+        first_col = (
             ('images', "Image", 'IMAGE_DATA'),
             ('materials', "Material", 'MATERIAL_DATA'),
             ('node_groups', "Node Group", 'NODETREE'),
@@ -36,16 +35,7 @@ class OUTLINER_MT_purge_by_type(bpy.types.Menu):
             ('particles', "Particles", 'PARTICLE_DATA'),
         )
 
-        for (identifier, name, icon) in entries:
-            row = grid.row()
-            count = orphaned_counter(identifier)
-            row.operator("outliner.purge", text=name + " (" + str(count) + ")", icon=icon).data_type=identifier
-            if count < 1:
-                row.enabled = False
-
-
-        # Second Column
-        entries = (
+        second_col = (
             ('meshes', "Mesh", 'MESH_DATA'),
             ('curves', "Curve", 'CURVE_DATA'),
             ('grease_pencils', "Grease Pencil", 'GREASEPENCIL'),
@@ -57,16 +47,7 @@ class OUTLINER_MT_purge_by_type(bpy.types.Menu):
             ('speakers', "Speaker", 'OUTLINER_DATA_SPEAKER'),
         )
 
-        for (identifier, name, icon) in entries:
-            row = grid.row()
-            count = orphaned_counter(identifier)
-            row.operator("outliner.purge", text=name + " (" + str(count) + ")", icon=icon).data_type=identifier
-            if count < 1:
-                row.enabled = False
-
-
-        # Third Column
-        entries = (
+        third_col = (
             ('actions', "Action", 'ACTION'),
             ('armatures', "Armature", 'ARMATURE_DATA'),
             ('cameras', "Camera", 'CAMERA_DATA'),
@@ -78,7 +59,7 @@ class OUTLINER_MT_purge_by_type(bpy.types.Menu):
             ('fonts', "Font", 'FONT_DATA'),
         )
 
-        for (identifier, name, icon) in entries:
+        for (identifier, name, icon) in first_col + second_col + third_col:
             row = grid.row()
             count = orphaned_counter(identifier)
             row.operator("outliner.purge", text=name + " (" + str(count) + ")", icon=icon).data_type=identifier
@@ -91,7 +72,7 @@ class OUTLINER_MT_purge_by_type(bpy.types.Menu):
 
 def purge_button(self, context):
     layout = self.layout
-    layout.operator("wm.call_menu", text="", icon="ORPHAN_DATA").name = "OUTLINER_MT_purge_by_type"
+    layout.operator("wm.call_menu", text="", icon='ORPHAN_DATA').name = "OUTLINER_MT_purge_by_type"
 
 
 def deep_clean_menu(self, context):
@@ -116,17 +97,20 @@ classes = [
 ]
 
 def register():
-    for cls in classes :
+    for cls in classes:
         bpy.utils.register_class(cls)
 
+    # MENU
     bpy.types.OUTLINER_HT_header.append(purge_button)
     bpy.types.TOPBAR_MT_file_cleanup.append(deep_clean_menu)
     bpy.types.TOPBAR_MT_file_external_data.append(pack_image_menu)
 
+
 def unregister():
-    for cls in reversed(classes) :
+    for cls in reversed(classes):
         bpy.utils.unregister_class(cls)
 
+    # MENU
     bpy.types.OUTLINER_HT_header.remove(purge_button)
     bpy.types.TOPBAR_MT_file_cleanup.remove(deep_clean_menu)
     bpy.types.TOPBAR_MT_file_external_data.remove(pack_image_menu)

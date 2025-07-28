@@ -5,6 +5,7 @@ import bpy
 
 def orphaned_counter(data_type):
     """Returns number of unused (orphaned) data for specified data type"""
+
     data_collection = getattr(bpy.data, data_type)
 
     orphaned_count = 0
@@ -20,6 +21,7 @@ def orphaned_counter(data_type):
 
 def purge_unrecursive(data_type):
     """Purges unused data for specified data type (without recursion)"""
+
     data_collection = getattr(bpy.data, data_type)
 
     purged_count = 0

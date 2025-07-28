@@ -26,39 +26,38 @@ class FILE_OT_purge_orphaned_by_name(bpy.types.Operator):
     bl_description = "Purge orphaned data by name and data type"
     bl_options = {'REGISTER', 'UNDO'}
 
-    search_text: bpy.props.StringProperty(name="Name")
+    search_text: bpy.props.StringProperty(
+        name = "Name",
+    )
     data_type: bpy.props.EnumProperty(
-        items=[
-            ('IMAGES', 'Image', '', 'IMAGE_DATA', 1),
-            ('MATERIALS', 'Mateiral', '', 'MATERIAL_DATA', 2),
-            ('NODE_GROUPS', 'Node Group', '', 'NODETREE', 3),
-            ('WORLDS', 'World', '', 'WORLD_DATA', 4),
-            ('BRUSHES', 'Brush', '', 'BRUSH_DATA', 5),
-            ('TEXTURES', 'Texture', '', 'TEXTURE_DATA', 6),
-            ('PALETTES', 'Palette', '', 'COLOR', 7),
-            ('LINESTYLES', 'Line Style', '', 'LINE_DATA', 8),
-            ('PARTICLES', 'Particle', '', 'PARTICLE_DATA', 9),
-            ('MESHES', 'Mesh', '', 'MESH_DATA', 10),
-            ('CURVES', 'Curve', '', 'CURVE_DATA', 11),
-            ('GREASE_PENCILS', 'Grease Pencil', '', 'GREASEPENCIL', 12),
-            ('METABALLS', 'Metaball', '', 'META_DATA', 13),
-            ('HAIR_CURVES', 'Hair', '', 'CURVES_DATA', 14),
-            ('VOLUMES', 'Volume', '', 'VOLUME_DATA', 15),
-            ('LATTICES', 'Lattice', '', 'LATTICE_DATA', 16),
-            ('SPEAKERS', 'Speaker', '', 'OUTLINER_DATA_SPEAKER', 17),
-            ('LIGHTPROBES', 'Light Probe', '', 'OUTLINER_DATA_LIGHTPROBE', 18),
-            ('ACTIONS', 'Action', '', 'ACTION', 19),
-            ('ARMATURES', 'Armature', '', 'ARMATURE_DATA', 20),
-#            ('SHAPE_KEYS', 'Shape Keys', '', 'SHAPEKEY_DATA', 21),
-            ('CAMERAS', 'Camera', '', 'CAMERA_DATA', 21),
-            ('LIGHTS', 'Lights', '', 'LIGHT_DATA', 22),
-            ('MOVIECLIPS', 'Movie Clip', '', 'TRACKER', 23),
-            ('SOUNDS', 'Sound', '', 'SOUND', 24),
-            ('TEXTS', 'Text', '', 'TEXT', 25),
-            ('FONT', 'Font', '', 'FONT_DATA', 26),
-        ],
-        name="Data Type",
-        default='IMAGES',
+        items=[('IMAGES', 'Image', '', 'IMAGE_DATA', 1),
+               ('MATERIALS', 'Mateiral', '', 'MATERIAL_DATA', 2),
+               ('NODE_GROUPS', 'Node Group', '', 'NODETREE', 3),
+               ('WORLDS', 'World', '', 'WORLD_DATA', 4),
+               ('BRUSHES', 'Brush', '', 'BRUSH_DATA', 5),
+               ('TEXTURES', 'Texture', '', 'TEXTURE_DATA', 6),
+               ('PALETTES', 'Palette', '', 'COLOR', 7),
+               ('LINESTYLES', 'Line Style', '', 'LINE_DATA', 8),
+               ('PARTICLES', 'Particle', '', 'PARTICLE_DATA', 9),
+               ('MESHES', 'Mesh', '', 'MESH_DATA', 10),
+               ('CURVES', 'Curve', '', 'CURVE_DATA', 11),
+               ('GREASE_PENCILS', 'Grease Pencil', '', 'GREASEPENCIL', 12),
+               ('METABALLS', 'Metaball', '', 'META_DATA', 13),
+               ('HAIR_CURVES', 'Hair', '', 'CURVES_DATA', 14),
+               ('VOLUMES', 'Volume', '', 'VOLUME_DATA', 15),
+               ('LATTICES', 'Lattice', '', 'LATTICE_DATA', 16),
+               ('SPEAKERS', 'Speaker', '', 'OUTLINER_DATA_SPEAKER', 17),
+               ('LIGHTPROBES', 'Light Probe', '', 'OUTLINER_DATA_LIGHTPROBE', 18),
+               ('ACTIONS', 'Action', '', 'ACTION', 19),
+               ('ARMATURES', 'Armature', '', 'ARMATURE_DATA', 20),
+               ('CAMERAS', 'Camera', '', 'CAMERA_DATA', 21),
+               ('LIGHTS', 'Lights', '', 'LIGHT_DATA', 22),
+               ('MOVIECLIPS', 'Movie Clip', '', 'TRACKER', 23),
+               ('SOUNDS', 'Sound', '', 'SOUND', 24),
+               ('TEXTS', 'Text', '', 'TEXT', 25),
+               ('FONT', 'Font', '', 'FONT_DATA', 26)],
+        name = "Data Type",
+        default = 'IMAGES',
     )
 
     def draw(self, context):
@@ -114,8 +113,6 @@ class FILE_OT_purge_orphaned_by_name(bpy.types.Operator):
             data_collection = bpy.data.actions
         elif self.data_type == 'ARMATURES':
             data_collection = bpy.data.armatures
-#        elif self.data_type == 'SHAPE_KEYS':
-#            data_collection = bpy.data.shape_keys
         elif self.data_type == 'CAMERAS':
             data_collection = bpy.data.cameras
         elif self.data_type == 'LIGHTS':
@@ -171,7 +168,6 @@ class FILE_OT_purge_orphaned_duplicates(bpy.types.Operator):
             bpy.data.lightprobes,
             bpy.data.actions,
             bpy.data.armatures,
-#            bpy.data.shape_keys,
             bpy.data.cameras,
             bpy.data.lights,
             bpy.data.movieclips,
@@ -220,16 +216,16 @@ class FILE_OT_unpack_image_by_name(bpy.types.Operator):
     bl_description = "Unpack images if they include keyword in their name, for example: Brick_Wall; Roughness; and etc."
     bl_options = {'REGISTER', 'UNDO'}
 
-    keyword: bpy.props.StringProperty(name="Includes in Name")
+    keyword: bpy.props.StringProperty(
+        name = "Includes in Name",
+    )
     unpack_method: bpy.props.EnumProperty(
-        items=[
-            ('USE_LOCAL', 'Use file from current directory', '', '', 0),
-            ('WRITE_LOCAL', 'Write file to current directory', '', '', 1),
-            ('USE_ORIGINAL', 'Use file in original location', '', '', 2),
-            ('WRITE_ORIGINAL', 'Write file to original location', '', '', 3),
-        ],
-        name="Unpack Type",
-        default='USE_LOCAL',
+        items=[('USE_LOCAL', 'Use file from current directory', ""),
+               ('WRITE_LOCAL', 'Write file to current directory', ""),
+               ('USE_ORIGINAL', 'Use file in original location', ""),
+               ('WRITE_ORIGINAL', 'Write file to original location', "")],
+        name = "Unpack Type",
+        default = 'USE_LOCAL',
     )
 
     def execute(self, context):
@@ -266,7 +262,6 @@ class FILE_OT_unpack_image_by_name(bpy.types.Operator):
 
 classes = [
     OUTLINER_OT_purge,
-
     FILE_OT_purge_orphaned_by_name,
     FILE_OT_purge_orphaned_duplicates,
     FILE_OT_pack_image_by_name,
@@ -274,9 +269,9 @@ classes = [
 ]
 
 def register():
-    for cls in classes :
+    for cls in classes:
         bpy.utils.register_class(cls)
 
 def unregister():
-    for cls in reversed(classes) :
+    for cls in reversed(classes):
         bpy.utils.unregister_class(cls)
