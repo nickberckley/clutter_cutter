@@ -2,7 +2,7 @@ import bpy
 from .functions import orphaned_counter
 
 
-#### ------------------------------ /panels/ ------------------------------ ####
+#### ------------------------------ PANELS ------------------------------ ####
 
 class OUTLINER_MT_purge_by_type(bpy.types.Menu):
     bl_idname = 'OUTLINER_MT_purge_by_type'
@@ -68,7 +68,7 @@ class OUTLINER_MT_purge_by_type(bpy.types.Menu):
 
 
 
-#### ------------------------------ /menus/ ------------------------------ ####
+#### ------------------------------ MENUS ------------------------------ ####
 
 def purge_button(self, context):
     layout = self.layout
@@ -77,8 +77,7 @@ def purge_button(self, context):
 
 def deep_clean_menu(self, context):
     layout = self.layout
-    layout.separator()
-    layout.operator("outliner.purge_orphaned_data_by_name")
+    layout.operator("file.purge_by_name")
     layout.operator("outliner.purge_orphaned_data_duplicates")
 
 
