@@ -78,7 +78,6 @@ def purge_button(self, context):
 def deep_clean_menu(self, context):
     layout = self.layout
     layout.operator("file.purge_by_name")
-    layout.operator("outliner.purge_orphaned_data_duplicates")
 
 
 def pack_image_menu(self, context):

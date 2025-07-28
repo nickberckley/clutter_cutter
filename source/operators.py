@@ -132,53 +132,6 @@ class FILE_OT_purge_by_name(bpy.types.Operator):
         return {'FINISHED'}
 
 
-class FILE_OT_purge_orphaned_duplicates(bpy.types.Operator):
-    bl_idname = "outliner.purge_orphaned_data_duplicates"
-    bl_label = "Purge Orphaned Duplicates"
-    bl_description = "Purge orphaned duplicates in all data types"
-    bl_options = {'REGISTER', 'UNDO'}
-
-    def execute(self, context):
-        data_collections = [
-            bpy.data.images,
-            bpy.data.materials,
-            bpy.data.node_groups,
-            bpy.data.worlds,
-            bpy.data.particles,
-            bpy.data.brushes,
-            bpy.data.textures,
-            bpy.data.palettes,
-            bpy.data.linestyles,
-            bpy.data.meshes,
-            bpy.data.curves,
-            bpy.data.grease_pencils,
-            bpy.data.metaballs,
-            bpy.data.hair_curves,
-            bpy.data.lattices,
-            bpy.data.volumes,
-            bpy.data.speakers,
-            bpy.data.lightprobes,
-            bpy.data.actions,
-            bpy.data.armatures,
-            bpy.data.cameras,
-            bpy.data.lights,
-            bpy.data.movieclips,
-            bpy.data.sounds,
-            bpy.data.texts,
-            bpy.data.fonts,
-        ]
-
-        purged_count = 0
-        for data_collection in data_collections:
-            for block in data_collection:
-                if block.users == 0 and '.0' in block.name:
-                    data_collection.remove(block)
-                    purged_count += 1
-
-        self.report({'INFO'}, "Purged {} orphaned duplicates".format(purged_count))
-        return {'FINISHED'}
-
-
 class FILE_OT_pack_image_by_name(bpy.types.Operator):
     bl_idname = "file.pack_image_by_name"
     bl_label = "Pack Images by Name"
@@ -255,7 +208,6 @@ class FILE_OT_unpack_image_by_name(bpy.types.Operator):
 classes = [
     OUTLINER_OT_purge,
     FILE_OT_purge_by_name,
-    FILE_OT_purge_orphaned_duplicates,
     FILE_OT_pack_image_by_name,
     FILE_OT_unpack_image_by_name,
 ]
