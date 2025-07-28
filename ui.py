@@ -17,6 +17,12 @@ class OUTLINER_MT_purge_by_type(bpy.types.Menu):
         col = layout.column(align=True)
         grid = col.grid_flow(row_major=False, columns=3, even_columns=True, even_rows=True)
 
+        """
+        NOTE: Cache files, paint curves, shape keys can be userless, but there is no way of removing them individually from Blender.
+        NOTE: Masks have a bug that always keeps at least one user on them, so even if they're userless it's impossible to detect that.
+        """
+
+
         # First Column
         entries = (
             ('images', "Image", 'IMAGE_DATA'),
@@ -45,10 +51,10 @@ class OUTLINER_MT_purge_by_type(bpy.types.Menu):
             ('grease_pencils', "Grease Pencil", 'GREASEPENCIL'),
             ('metaballs', "Metaball", 'META_DATA'),
             ('hair_curves', "Hair", 'OUTLINER_DATA_CURVES'),
+            ('pointclouds', "Point Cloud", 'POINTCLOUD_DATA'),
             ('volumes', "Volume", 'OUTLINER_DATA_VOLUME'),
             ('lattices', "Lattice", 'LATTICE_DATA'),
             ('speakers', "Speaker", 'OUTLINER_DATA_SPEAKER'),
-            ('lightprobes', "Light Probe", 'OUTLINER_DATA_LIGHTPROBE'),
         )
 
         for (identifier, name, icon) in entries:
@@ -65,6 +71,7 @@ class OUTLINER_MT_purge_by_type(bpy.types.Menu):
             ('armatures', "Armature", 'ARMATURE_DATA'),
             ('cameras', "Camera", 'CAMERA_DATA'),
             ('lights', "Light", 'LIGHT_DATA'),
+            ('lightprobes', "Light Probe", 'OUTLINER_DATA_LIGHTPROBE'),
             ('movieclips', "Movie Clip", 'TRACKER'),
             ('sounds', "Sound", 'FILE_SOUND'),
             ('texts', "Text", 'TEXT'),
