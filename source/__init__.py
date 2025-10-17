@@ -1,9 +1,16 @@
-import bpy
-from . import(
-    functions,
-    operators,
-    ui,
-)
+if "bpy" in locals():
+    import importlib
+    for mod in [operators,
+                ui,
+                ]:
+        importlib.reload(mod)
+    print("Add-on Reloaded: Clutter Cutter")
+else:
+    import bpy
+    from . import (
+        operators,
+        ui,
+    )
 
 
 #### ------------------------------ REGISTRATION ------------------------------ ####
