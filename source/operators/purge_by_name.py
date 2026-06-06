@@ -70,6 +70,8 @@ class FILE_OT_purge_by_name(bpy.types.Operator):
             for block in data_type:
                 if block.name == "Viewer Node":
                     continue
+                if block.library:
+                    continue
 
                 # Exclude used data-blocks if "Unused Only" chosen.
                 if self.unused_only and block.users != 0:

@@ -12,7 +12,8 @@ def count_orphans(data_type) -> int:
     orphaned_count = 0
     for block in data_collection:
         if not block.users:
-            orphaned_count += 1
+            if not block.library:
+                orphaned_count += 1
 
     return orphaned_count
 
@@ -59,6 +60,8 @@ def purge_orphans(data_type, recursive=False) -> int:
     for block in data_collection:
         if block.users == 0:
             if block.name == "Viewer Node":
+                continue
+            if block.library:
                 continue
 
             if recursive:
