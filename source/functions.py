@@ -3,7 +3,7 @@ import bpy
 
 #### ------------------------------ /list/ ------------------------------ ####
 
-def orphaned_counter(data_type):
+def orphaned_counter(data_type) -> int:
     """Returns number of unused (orphaned) data for specified data type"""
 
     data_collection = getattr(bpy.data, data_type)
@@ -19,7 +19,7 @@ def orphaned_counter(data_type):
 
 #### ------------------------------ /operate/ ------------------------------ ####
 
-def purge_unrecursive(data_type):
+def purge_unrecursive(data_type) -> int:
     """Purges unused data for specified data type (without recursion)"""
 
     data_collection = getattr(bpy.data, data_type)
@@ -27,8 +27,10 @@ def purge_unrecursive(data_type):
     purged_count = 0
     for block in data_collection:
         if block.users == 0:
-            if not block.name == "Viewer Node":
-                data_collection.remove(block)
-                purged_count += 1
+            if block.name == "Viewer Node":
+                continue
+
+            data_collection.remove(block)
+            purged_count += 1
 
     return purged_count
