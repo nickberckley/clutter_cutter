@@ -1,6 +1,6 @@
 import bpy
 from .constants import PURGEABLE_TYPES
-from .functions import orphaned_counter
+from .functions import count_orphans
 
 
 #### ------------------------------ MENUS ------------------------------ ####
@@ -23,7 +23,7 @@ class OUTLINER_MT_purge_by_type(bpy.types.Menu):
 
         for (identifier, name, __, icon, __) in first_col + second_col + third_col:
             row = grid.row()
-            count = orphaned_counter(identifier)
+            count = count_orphans(identifier)
             text = name + " (" + str(count) + ")"
             row.operator("outliner.purge", text=text, icon=icon).data_type=identifier
             if count < 1:

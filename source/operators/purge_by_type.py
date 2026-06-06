@@ -1,5 +1,5 @@
 import bpy
-from ..functions import purge_unrecursive
+from ..functions import purge_orphans
 
 
 #### ------------------------------ OPERATORS ------------------------------ ####
@@ -12,11 +12,22 @@ class OUTLINER_OT_purge_by_type(bpy.types.Operator):
 
     data_type: bpy.props.StringProperty(
     )
+    recursive: bpy.props.BoolProperty(
+        name = "Recursive",
+        default = False,
+    )
+
+    def invoke(self, context, event):
+        self.recursive = event.shift
+        return self.execute(context)
 
     def execute(self, context):
-        purged_count = purge_unrecursive(self.data_type)
+        purged_count, recursive_count = purge_orphans(self.data_type, recursive=self.recursive)
 
-        self.report({'INFO'}, f"Purged {purged_count} orphaned {self.data_type}")
+        if self.recursive:
+            self.report({'INFO'}, f"Purged {purged_count} orphaned {self.data_type} (and {recursive_count} recursive)")
+        else:
+            self.report({'INFO'}, f"Purged {purged_count} orphaned {self.data_type}")
         return {'FINISHED'}
 
 
